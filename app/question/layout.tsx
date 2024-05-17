@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Noto_Sans_TC } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
 const notoSansTC = Noto_Sans_TC({ weight: ["400", "700"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MOS 實驗",
-  description: "MOS 實驗",
+  title: "語音合成問卷",
+  description: "語音合成問卷",
 };
 
 export default function RootLayout({
