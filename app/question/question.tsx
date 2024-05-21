@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { QuestionType, AnswerType } from "./type";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
+import { Console } from "console";
 interface State extends SnackbarOrigin {
   open: boolean;
 }
@@ -17,6 +18,9 @@ const Question: React.FC = () => {
   const [rate, setRate] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [startTime, setStartTime] = useState(0);
+  const [toastMessage, setToastMessage] = useState("正在送出問卷資料");
+  const [isLastQuestion, setIsLastQuestion] = useState(false);
+
   const [state, setState] = React.useState<State>({
     open: false,
     vertical: "bottom",
@@ -36,34 +40,36 @@ const Question: React.FC = () => {
       next.value.filePath = "assets" + next.value.filePath;
       setCurrentQuestion(next.value);
     } else {
-      completeQuestion();
+      setIsLastQuestion(true);
     }
   };
-
-  const completeQuestion = () => {
-    setState({ ...state, open: true });
-    axios
-      .post(process.env.NEXT_PUBLIC_API_URL + "/submitResult", {
-        name: localStorage.getItem("userName"),
-        email: localStorage.getItem("email"),
-        Familiarity: Number(localStorage.getItem("familiarity")),
-        answers: answers,
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    router.push("/complete");
-  };
+  useEffect(() => {
+    if (isLastQuestion) {
+      setState({ ...state, open: true });
+      setToastMessage("正在送出問卷資料");
+      axios
+        .post(process.env.NEXT_PUBLIC_API_URL + "/submitResult", {
+          name: localStorage.getItem("userName"),
+          email: localStorage.getItem("email"),
+          Familiarity: Number(localStorage.getItem("familiarity")),
+          answers: answers,
+        })
+        .then((response) => {
+          if (response.status.toString() === "200") router.push("/complete");
+        })
+        .catch((error) => {
+          console.error(error);
+          setToastMessage("送出失敗，請再試一次 " + error.response.data.Msg);
+          setState({ ...state, open: true });
+        });
+    }
+  }, [isLastQuestion]);
 
   useEffect(() => {
     axios
       .get(process.env.NEXT_PUBLIC_API_URL + "/AllQuestions")
       .then((response) => {
         setQuestions(response.data.Data);
-        setIsLoaded(true);
       })
       .catch((error) => {
         console.error(error);
@@ -82,12 +88,18 @@ const Question: React.FC = () => {
     if (isLoaded && currentQuestion === null) {
       nextQuestion();
     }
-  }, [isLoaded, currentQuestion,nextQuestion]);
+  }, [isLoaded, currentQuestion, nextQuestion]);
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      setIsLoaded(true);
+    }
+  }, [questions]);
 
   const saveAnswer = (questionId: number, rate: number, useTime: Number) => {
     setAnswers([
       ...answers,
-      { questionId: questionId, rate: rate, timeTaken: useTime },
+      { questionId: questionId, answerChoice: rate, timeTaken: useTime },
     ]);
   };
 
@@ -102,7 +114,7 @@ const Question: React.FC = () => {
       setStartTime(0);
     }
   };
-  const handleClose = () => {
+  const handleToastClose = () => {
     setState({ ...state, open: false });
   };
   return (
@@ -110,8 +122,8 @@ const Question: React.FC = () => {
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
-        onClose={handleClose}
-        message="正在送出問卷資料"
+        onClose={handleToastClose}
+        message={toastMessage}
         key={vertical + horizontal}
       />
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
