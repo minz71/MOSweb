@@ -1,6 +1,6 @@
 export interface AnswerType {
   questionId: number;
-  rate: number;
+  answerChoice: number;
   timeTaken: Number;
 }
 export interface QuestionType {
