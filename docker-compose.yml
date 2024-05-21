@@ -11,7 +11,8 @@ services:
       - NODE_ENV=production
     restart: always
     networks:
-      - npm_default
+      npm_default:
+        ipv4_address: 172.18.0.11
 
 networks:
   npm_default:
