@@ -10,7 +10,9 @@ services:
     environment:
       - NODE_ENV=production
     restart: always
+    networks:
+      - npm_default
 
-
-volumes:
-  app_data:
+networks:
+  npm_default:
+    external: true
