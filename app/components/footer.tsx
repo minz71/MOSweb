@@ -3,7 +3,7 @@ import React from "react";
 const Footer = () => {
   return (
     <footer style={footerStyles}>
-      <div className="text-center justify-center">NTUST@Gamlab</div>
+      <div className="text-center justify-center">NTUST@GAMELAB</div>
     </footer>
   );
 };
