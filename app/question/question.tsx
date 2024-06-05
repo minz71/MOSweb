@@ -6,11 +6,8 @@ import AudioPlayer from "../components/audioPlayer";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { QuestionType, AnswerType } from "./type";
-import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
-import { Console } from "console";
-interface State extends SnackbarOrigin {
-  open: boolean;
-}
+import { Progress, message } from "antd";
+
 const Question: React.FC = () => {
   const [btnDisable, setBtnDisable] = useState(true);
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -18,15 +15,26 @@ const Question: React.FC = () => {
   const [rate, setRate] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [startTime, setStartTime] = useState(0);
-  const [toastMessage, setToastMessage] = useState("正在送出問卷資料");
   const [isLastQuestion, setIsLastQuestion] = useState(false);
-
-  const [state, setState] = React.useState<State>({
-    open: false,
-    vertical: "bottom",
-    horizontal: "center",
-  });
-  const { vertical, horizontal, open } = state;
+  const [progress, setProgress] = useState(0);
+  const [messageApi, contextHolder] = message.useMessage();
+  const sendingMessage = () => {
+    messageApi.info({
+      content: "正在送出問卷資料",
+      style: {
+        marginTop: "5vh",
+      },
+    });
+  };
+  const sendingErrorMessage = (errMsg: string) => {
+    messageApi.open({
+      type: "error",
+      content: errMsg,
+      style: {
+        marginTop: "5vh",
+      },
+    });
+  };
   const router = useRouter();
 
   // Question Iterrator
@@ -37,7 +45,7 @@ const Question: React.FC = () => {
   const nextQuestion = () => {
     const next = iteratorRef.current?.next();
     if (next && !next.done) {
-      next.value.filePath = "assets" + next.value.filePath;
+      next.value.filePath = next.value.filePath;
       setCurrentQuestion(next.value);
     } else {
       setIsLastQuestion(true);
@@ -45,8 +53,7 @@ const Question: React.FC = () => {
   };
   useEffect(() => {
     if (isLastQuestion) {
-      setState({ ...state, open: true });
-      setToastMessage("正在送出問卷資料");
+      sendingMessage();
       axios
         .post(process.env.NEXT_PUBLIC_API_URL + "/submitResult", {
           name: localStorage.getItem("userName"),
@@ -59,8 +66,7 @@ const Question: React.FC = () => {
         })
         .catch((error) => {
           console.error(error);
-          setToastMessage("送出失敗，請再試一次 " + error.response.data.Msg);
-          setState({ ...state, open: true });
+          sendingErrorMessage("送出失敗，請再試一次 " + error.response.data.Msg);
         });
     }
   }, [isLastQuestion]);
@@ -112,28 +118,28 @@ const Question: React.FC = () => {
       setBtnDisable(true);
       setRate(0);
       setStartTime(0);
+      setProgress(Math.floor((answers.length / questions.length) * 100));
     }
   };
-  const handleToastClose = () => {
-    setState({ ...state, open: false });
-  };
+
   return (
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={open}
-        onClose={handleToastClose}
-        message={toastMessage}
-        key={vertical + horizontal}
-      />
+      {contextHolder}
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
-        <div className="mt-10 col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
+        <div className="mt-10 col-span-1 justify-center">
+          <Progress
+            percent={progress}
+            status="active"
+            strokeColor={{ from: "#A6D8E5", to: "#4491E3" }}
+          />
+        </div>
+        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
           {currentQuestion?.questionId}. {currentQuestion?.mandarin}
         </div>
         <div className="flex justify-center">
           {isLoaded && (
             <AudioPlayer
-              audioFile={currentQuestion?.filePath || ""}
+              audioFile={`${process.env.NEXT_PUBLIC_API_URL}/static${currentQuestion?.filePath}` || ""}
               playPauseOnClick={() => {
                 if (startTime === 0) {
                   const time = new Date().getTime();

@@ -3,8 +3,8 @@ import React from "react";
 import "./userinfo.css";
 import Button from "../components/button";
 import { useRouter } from "next/navigation";
-import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
-
+import { message } from "antd";
+import axios from "axios";
 const options = [
   { value: 5, label: "精通（聽 / 說 / 讀 / 寫 皆能運用自如）" },
   { value: 4, label: "流利（日常時間都以閩南語進行溝通）" },
@@ -15,20 +15,31 @@ const options = [
   { value: 2, label: "略懂（僅能理解及透過隻字片語進行溝通）" },
   { value: 1, label: "陌生（幾乎聽不懂閩南語）" },
 ];
-interface State extends SnackbarOrigin {
-  open: boolean;
-}
+
 const UserInfo: React.FC = () => {
   const router = useRouter();
   const [userName, setUserName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [familiarity, setFamiliarity] = React.useState(0);
-  const [state, setState] = React.useState<State>({
-    open: false,
-    vertical: "bottom",
-    horizontal: "center",
-  });
-  const { vertical, horizontal, open } = state;
+  const [messageApi, contextHolder] = message.useMessage();
+  const error = () => {
+    messageApi.open({
+      type: "error",
+      content: "請填寫所有欄位",
+      style: {
+        marginTop: "5vh",
+      },
+    });
+  };
+  const sendingErrorMessage = (errMsg: string) => {
+    messageApi.open({
+      type: "error",
+      content: errMsg,
+      style: {
+        marginTop: "5vh",
+      },
+    });
+  };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(event.target.value);
@@ -49,25 +60,27 @@ const UserInfo: React.FC = () => {
 
   const checkField = () => {
     if (userName === "" || email === "" || familiarity === 0) {
-      setState({ ...state, open: true });
+      error();
     } else {
-      router.push("/question");
+      axios
+        .post(process.env.NEXT_PUBLIC_API_URL + "/checkUser", {
+          name: localStorage.getItem("userName"),
+          email: localStorage.getItem("email"),
+          Familiarity: Number(localStorage.getItem("familiarity")),
+        })
+        .then((response) => {
+          if (response.status.toString() === "200") router.push("/audioRecorder");
+        })
+        .catch((error) => {
+          console.error(error);
+          sendingErrorMessage(error.response.data.Msg);
+        });
     }
   };
 
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-  
   return (
     <div>
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={open}
-        onClose={handleClose}
-        message="請填寫所有欄位"
-        key={vertical + horizontal}
-      />
+      {contextHolder}
       <div className="container-form ">
         <p className="text">參訪者調查</p>
         <input
