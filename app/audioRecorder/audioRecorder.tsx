@@ -11,6 +11,7 @@ const AudioRecorder: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const router = useRouter();
+
   useEffect(() => {
     checkRecordingPermission();
   }, []);
@@ -37,11 +38,10 @@ const AudioRecorder: React.FC = () => {
 
   const checkRecordingPermission = async (): Promise<boolean> => {
     try {
-      const permissionStatus = await navigator.permissions.query({
-        name: "microphone" as PermissionName,
-      });
-      setIsGranted(permissionStatus.state === "granted");
-      return permissionStatus.state === "granted";
+      // 詢問麥克風權限
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setIsGranted(true);
+      return true;
     } catch (error) {
       console.error("Error checking recording permission:", error);
       setIsGranted(false);
@@ -93,7 +93,7 @@ const AudioRecorder: React.FC = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          localStorage.setItem("audiofile", data.Data);
+          localStorage.setItem("audioPath", data.Data);
           router.push("/question");
         })
         .catch((error) => {
@@ -128,10 +128,11 @@ const AudioRecorder: React.FC = () => {
           </div>
         </div>
         <div className="col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
-          <Button
-            text={isRecording ? "停止錄音" : "開始錄音"}
-            onClick={handleRecordClick}
-          ></Button>
+          {isGranted ?
+            <Button
+              text={isRecording ? "停止錄音" : "開始錄音"}
+              onClick={handleRecordClick}
+            ></Button> : ""}
         </div>
         <div className="mb-10 col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
           <div className="flex space-x-4">

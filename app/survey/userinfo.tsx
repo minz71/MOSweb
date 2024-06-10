@@ -70,6 +70,7 @@ const UserInfo: React.FC = () => {
         })
         .then((response) => {
           if (response.status.toString() === "200") router.push("/audioRecorder");
+          else sendingErrorMessage("Error");
         })
         .catch((error) => {
           console.error(error);

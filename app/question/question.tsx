@@ -59,6 +59,7 @@ const Question: React.FC = () => {
           name: localStorage.getItem("userName"),
           email: localStorage.getItem("email"),
           Familiarity: Number(localStorage.getItem("familiarity")),
+          audioPath: localStorage.getItem("audioPath"),
           answers: answers,
         })
         .then((response) => {
