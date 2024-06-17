@@ -3,12 +3,14 @@ import "./button.css";
 
 interface ButtonProps {
   text: string;
+  icon?: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
   text,
+  icon,
   onClick = () => {},
   disabled = false,
 }) => {
@@ -22,7 +24,10 @@ const Button: React.FC<ButtonProps> = ({
       onClick={handleClick}
       disabled={disabled}
     >
-      {text}
+      <div className="text-xl">
+        {icon}
+        {text}
+      </div>
     </button>
   );
 };

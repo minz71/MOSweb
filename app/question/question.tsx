@@ -79,7 +79,7 @@ const Question: React.FC = () => {
         setQuestions(response.data.Data);
       })
       .catch((error) => {
-        console.error(error);
+        sendingErrorMessage("取得題目失敗，請再試一次");
       });
   }, []);
 
@@ -103,13 +103,6 @@ const Question: React.FC = () => {
     }
   }, [questions]);
 
-  const saveAnswer = (questionId: number, rate: number, useTime: Number) => {
-    setAnswers([
-      ...answers,
-      { questionId: questionId, answerChoice: rate, timeTaken: useTime },
-    ]);
-  };
-
   const submitQuestion = () => {
     const endTime = new Date().getTime();
     const useTime = (endTime - startTime) / 1000;
@@ -119,9 +112,22 @@ const Question: React.FC = () => {
       setBtnDisable(true);
       setRate(0);
       setStartTime(0);
-      setProgress(Math.floor((answers.length / questions.length) * 100));
     }
   };
+
+  const saveAnswer = (questionId: number, rate: number, useTime: Number) => {
+    setAnswers([
+      ...answers,
+      { questionId: questionId, answerChoice: rate, timeTaken: useTime },
+    ]);
+  };
+  
+  // 修改進度條
+  useEffect(() => {
+    if (questions.length > 0) {
+      setProgress(Math.floor((answers.length / questions.length) * 100));
+    }
+  }, [answers, questions.length]);
 
   return (
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">

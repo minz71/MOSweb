@@ -2,7 +2,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "../components/button";
 import { useRouter } from "next/navigation";
-
+import {
+  AudioOutlined,
+  CloseSquareOutlined,
+  PlayCircleOutlined,
+  CloudUploadOutlined,
+} from "@ant-design/icons";
+import { message } from "antd";
 const AudioRecorder: React.FC = () => {
   const [isGranted, setIsGranted] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -11,7 +17,15 @@ const AudioRecorder: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const router = useRouter();
-
+  const [messageApi, contextHolder] = message.useMessage();
+  const sendingMessage = (msg: string) => {
+    messageApi.info({
+      content: msg,
+      style: {
+        marginTop: "5vh",
+      },
+    });
+  };
   useEffect(() => {
     checkRecordingPermission();
   }, []);
@@ -53,6 +67,7 @@ const AudioRecorder: React.FC = () => {
     setAudioBlob(null);
     setRecordingTime(0);
     if (!isGranted) {
+      sendingMessage("請先允需錄音權限，然後點擊開始錄音按鈕。");
       return;
     }
 
@@ -84,6 +99,7 @@ const AudioRecorder: React.FC = () => {
 
   const handleUploadClick = () => {
     if (audioBlob) {
+      sendingMessage("上傳中，請稍後。");
       const formData = new FormData();
       formData.append("audio", audioBlob, "recording.wav");
 
@@ -97,7 +113,7 @@ const AudioRecorder: React.FC = () => {
           router.push("/question");
         })
         .catch((error) => {
-          console.error("Error:", error);
+          sendingMessage("上傳失敗，請再試一次。" + error.response);
         });
     }
   };
@@ -112,6 +128,7 @@ const AudioRecorder: React.FC = () => {
 
   return (
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">
+      {contextHolder}
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
         <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
           {isGranted ? "" : "請先允需錄音權限，然後點擊開始錄音按鈕。"}
@@ -128,21 +145,27 @@ const AudioRecorder: React.FC = () => {
           </div>
         </div>
         <div className="col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
-          {isGranted ?
+          {isGranted ? (
             <Button
               text={isRecording ? "停止錄音" : "開始錄音"}
+              icon={isRecording ? <CloseSquareOutlined /> : <AudioOutlined />}
               onClick={handleRecordClick}
-            ></Button> : ""}
+            ></Button>
+          ) : (
+            ""
+          )}
         </div>
         <div className="mb-10 col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
           <div className="flex space-x-4">
             <Button
-              text="試聽"
+              text=" 試聽"
+              icon={<PlayCircleOutlined />}
               disabled={audioBlob === null}
               onClick={handlePlayClick}
             ></Button>
             <Button
-              text="上傳"
+              text=" 上傳"
+              icon={<CloudUploadOutlined />}
               disabled={audioBlob === null}
               onClick={handleUploadClick}
             ></Button>
