@@ -133,8 +133,11 @@ const AudioRecorder: React.FC = () => {
         <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
           {isGranted ? "" : "請先允需錄音權限，然後點擊開始錄音按鈕。"}
         </div>
-        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
-          請錄製以下語音：「測試測試測試」。
+        <div className="col-span-1 text-lg capitalize rounded-md flex justify-center">
+          請錄製以下語音：
+        </div>
+        <div className="col-span-1 text-lg capitalize rounded-md flex justify-center">
+          「 這裡的風景非常美麗，適合發展觀光事業。 」
         </div>
         <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
           <div className="flex space-x-4">
