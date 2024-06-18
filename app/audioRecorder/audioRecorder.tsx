@@ -147,7 +147,7 @@ const AudioRecorder: React.FC = () => {
         <div className="col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
           {isGranted ? (
             <Button
-              text={isRecording ? "停止錄音" : "開始錄音"}
+              text={isRecording ? " 停止錄音" : " 開始錄音"}
               icon={isRecording ? <CloseSquareOutlined /> : <AudioOutlined />}
               onClick={handleRecordClick}
             ></Button>
