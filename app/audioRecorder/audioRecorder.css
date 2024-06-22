@@ -1,0 +1,15 @@
+.showText {
+  width: 100%;
+  padding: 12px 18px;
+  font-size: 16px;
+  font-family: inherit;
+  box-shadow: 0 0 0 1px #BDE0FE;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #e7fbff;
+  transition: all 0.3s;
+  outline: none;
+  box-shadow: 0 0 10px 1px #A2D2FF;
+  border: none;
+  transition: all 0.3s;
+}

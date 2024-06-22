@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Rating from "../components/rating";
 import Button from "../components/button";
 import AudioPlayer from "../components/audioPlayer";
+import "./question.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { QuestionType, AnswerType } from "./type";
-import { Progress, message } from "antd";
+import { Progress, message, Tour } from "antd";
+import type { TourProps } from "antd";
 
 const Question: React.FC = () => {
   const [btnDisable, setBtnDisable] = useState(true);
@@ -17,6 +19,37 @@ const Question: React.FC = () => {
   const [startTime, setStartTime] = useState(0);
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const [progress, setProgress] = useState(0);
+  const tourRefPlay = useRef(null);
+  const tourRefRate = useRef(null);
+  const tourRefNext = useRef(null);
+  const [openTour, setOpenTour] = useState<boolean>(true);
+  const steps: TourProps["steps"] = [
+    {
+      title: "使用說明",
+      description: "點擊播放按紐",
+      target: () => tourRefPlay.current,
+    },
+    {
+      title: "使用說明",
+      description: "點擊星星評分，1 顆星代表非常不好，5 顆星代表非常好",
+      target: () => tourRefRate.current,
+    },
+    {
+      title: "使用說明",
+      description: "評分完成後點擊下一題按鈕",
+      target: () => tourRefNext.current,
+    },
+  ];
+  useEffect(() => {
+    if (openTour === true) {
+      setBtnDisable(false);
+      setStartTime(1);
+    } else {
+      setBtnDisable(true);
+      setStartTime(0);
+    }
+  }, [openTour]);
+
   const [messageApi, contextHolder] = message.useMessage();
   const sendingMessage = () => {
     messageApi.info({
@@ -67,7 +100,9 @@ const Question: React.FC = () => {
         })
         .catch((error) => {
           console.error(error);
-          sendingErrorMessage("送出失敗，請再試一次 " + error.response.data.Msg);
+          sendingErrorMessage(
+            "送出失敗，請再試一次 " + error.response.data.Msg
+          );
         });
     }
   }, [isLastQuestion]);
@@ -106,7 +141,7 @@ const Question: React.FC = () => {
   const submitQuestion = () => {
     const endTime = new Date().getTime();
     const useTime = (endTime - startTime) / 1000;
-    if (useTime > 0 && startTime !== 0) {
+    if (useTime > 0 && startTime !== 0 && startTime !== 1) {
       saveAnswer(currentQuestion?.questionId || 0, rate, useTime);
       nextQuestion();
       setBtnDisable(true);
@@ -121,7 +156,7 @@ const Question: React.FC = () => {
       { questionId: questionId, answerChoice: rate, timeTaken: useTime },
     ]);
   };
-  
+
   // 修改進度條
   useEffect(() => {
     if (questions.length > 0) {
@@ -132,10 +167,18 @@ const Question: React.FC = () => {
   return (
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">
       {contextHolder}
+      <div className="">
+          <Tour
+            open={openTour}
+            onClose={() => setOpenTour(false)}
+            steps={steps}
+          />
+        </div>
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
         <div className="mt-10 col-span-1 justify-center">
           <Progress
             percent={progress}
+            format={(percent) => `${percent}% 題目已完成`}
             status="active"
             strokeColor={{ from: "#A6D8E5", to: "#4491E3" }}
           />
@@ -146,7 +189,11 @@ const Question: React.FC = () => {
         <div className="flex justify-center">
           {isLoaded && (
             <AudioPlayer
-              audioFile={`${process.env.NEXT_PUBLIC_API_URL}/static${currentQuestion?.filePath}` || ""}
+              tourRef={tourRefPlay}
+              audioFile={
+                `${process.env.NEXT_PUBLIC_API_URL}/static${currentQuestion?.filePath}` ||
+                ""
+              }
               playPauseOnClick={() => {
                 if (startTime === 0) {
                   const time = new Date().getTime();
@@ -156,7 +203,7 @@ const Question: React.FC = () => {
             ></AudioPlayer>
           )}
         </div>
-        <div className="flex flex-row-reverse justify-center">
+        <div className="flex flex-row-reverse justify-center" ref={tourRefRate}>
           <Rating
             disabled={startTime === 0}
             isFixed={false}
@@ -168,7 +215,7 @@ const Question: React.FC = () => {
           />
         </div>
         <div className="col-span-1">
-          <div className="flex justify-center">
+          <div className="flex justify-center" ref={tourRefNext}>
             <Button
               text="下一題"
               disabled={btnDisable}

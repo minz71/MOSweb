@@ -13,7 +13,7 @@ const Rating: React.FC<Props> = ({
   rate = 0,
   isFixed = false,
   name = "rating",
-  disabled =false,
+  disabled = false,
   onchange = () => {},
 }) => {
   const [selectedRate, setSelectedRate] = useState(rate);

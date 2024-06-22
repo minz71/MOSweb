@@ -83,7 +83,7 @@ const UserInfo: React.FC = () => {
     <div>
       {contextHolder}
       <div className="container-form ">
-        <p className="text">參訪者調查</p>
+        <p className="text">受試者調查</p>
         <input
           type="text"
           name="text"

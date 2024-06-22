@@ -26,7 +26,7 @@ const Describe: React.FC<DescribeProps> = () => {
           <p className="flex justify-center"> 合成語音品質評估 </p>
           <p className="flex justify-center"> 感謝您參與本次實驗！ </p>
           <p className="flex justify-center">
-            在這個實驗中，我們使用電腦合成人類語音。
+            在這個實驗中，我們使用電腦合成閩南語語音。
           </p>
           <p className="flex justify-center">
             以下的音檔中，包含了真實的錄音以及合成的聲音，並且每句話都有附上文字稿。

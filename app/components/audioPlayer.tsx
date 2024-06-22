@@ -4,11 +4,13 @@ import "./audioPlayer.css"
 interface AudioProps {
   audioFile: string;
   playPauseOnClick?: () => void;
+  tourRef?: React.RefObject<any>;
 }
 
 const AudioComponent: React.FC<AudioProps> = ({
   audioFile,
   playPauseOnClick,
+  tourRef,
 }) => {
   const [currentAudioFile, setCurrentAudioFile] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -78,7 +80,7 @@ const AudioComponent: React.FC<AudioProps> = ({
   return (
     <div className="col-span-1 rounded-md">
       <div className="audio green-audio-player">
-        <div className="play-pause-btn" onClick={togglePlayPause}>
+        <div className="play-pause-btn" onClick={togglePlayPause} ref={tourRef}>
           <svg
             viewBox="0 0 18 24"
             height="24"

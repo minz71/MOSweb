@@ -34,8 +34,21 @@
 
 .rating > input:checked ~ label > svg {
   fill: #ffa723; /* Set color for selected stars */
+  animation: keyframes-star .5s;
 }
 
 .rating.disabled {
   visibility: hidden;
+}
+
+/* ------ Animations ------ */
+@keyframes keyframes-star {
+  0% {
+    transform: rotate(0deg) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(10deg) scale(1.3);
+  }
 }

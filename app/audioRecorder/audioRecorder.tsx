@@ -9,6 +9,8 @@ import {
   CloudUploadOutlined,
 } from "@ant-design/icons";
 import { message } from "antd";
+import "./audioRecorder.css";
+
 const AudioRecorder: React.FC = () => {
   const [isGranted, setIsGranted] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -52,12 +54,12 @@ const AudioRecorder: React.FC = () => {
 
   const checkRecordingPermission = async (): Promise<boolean> => {
     try {
-      // 詢問麥克風權限
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setIsGranted(true);
       return true;
     } catch (error) {
       console.error("Error checking recording permission:", error);
+      sendingMessage("請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。");
       setIsGranted(false);
       return false;
     }
@@ -67,7 +69,7 @@ const AudioRecorder: React.FC = () => {
     setAudioBlob(null);
     setRecordingTime(0);
     if (!isGranted) {
-      sendingMessage("請先允需錄音權限，然後點擊開始錄音按鈕。");
+      sendingMessage("請先允許錄音權限");
       return;
     }
 
@@ -130,14 +132,14 @@ const AudioRecorder: React.FC = () => {
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">
       {contextHolder}
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
-        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
-          {isGranted ? "" : "請先允需錄音權限，然後點擊開始錄音按鈕。"}
+        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center" onClick={checkRecordingPermission}>
+          {isGranted ? " " : "請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。"}
         </div>
         <div className="col-span-1 text-lg capitalize rounded-md flex justify-center">
-          請錄製以下語音：
+          請用台語讀出下列這段話：
         </div>
-        <div className="col-span-1 text-lg capitalize rounded-md flex justify-center">
-          「 這裡的風景非常美麗，適合發展觀光事業。 」
+        <div className="col-span-1 text-lg capitalize rounded-md flex justify-center showText">
+          這裡的風景非常美麗，適合發展觀光事業。
         </div>
         <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
           <div className="flex space-x-4">
@@ -150,12 +152,12 @@ const AudioRecorder: React.FC = () => {
         <div className="col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
           {isGranted ? (
             <Button
-              text={isRecording ? " 停止錄音" : " 開始錄音"}
+              text={isRecording ? " 停止錄音" : audioBlob === null ? " 開始錄音" : " 重新錄音"}
               icon={isRecording ? <CloseSquareOutlined /> : <AudioOutlined />}
               onClick={handleRecordClick}
             ></Button>
           ) : (
-            ""
+            " "
           )}
         </div>
         <div className="mb-10 col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
@@ -167,7 +169,7 @@ const AudioRecorder: React.FC = () => {
               onClick={handlePlayClick}
             ></Button>
             <Button
-              text=" 上傳"
+              text=" 下一題"
               icon={<CloudUploadOutlined />}
               disabled={audioBlob === null}
               onClick={handleUploadClick}
