@@ -174,8 +174,8 @@ const Question: React.FC = () => {
             steps={steps}
           />
         </div>
-      <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
-        <div className="mt-10 col-span-1 justify-center">
+      <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 p-4 rounded-lg shadow-md flex flex-col items-center justify-center space-y-10">
+        <div className="mt-10 w-full max-w-xs">
           <Progress
             percent={progress}
             format={(percent) => `${percent}% 題目已完成`}
@@ -183,9 +183,13 @@ const Question: React.FC = () => {
             strokeColor={{ from: "#A6D8E5", to: "#4491E3" }}
           />
         </div>
-        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center">
-          {currentQuestion?.questionId}. {currentQuestion?.mandarin}
-        </div>
+        <div className="w-full max-w-xl h-24 flex items-center justify-center overflow-y-auto">
+        {currentQuestion && (
+          <div className="text-lg capitalize text-center">
+            {currentQuestion.questionId}. {currentQuestion.mandarin}
+          </div>
+        )}
+      </div>
         <div className="flex justify-center">
           {isLoaded && (
             <AudioPlayer
