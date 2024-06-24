@@ -59,7 +59,9 @@ const AudioRecorder: React.FC = () => {
       return true;
     } catch (error) {
       console.error("Error checking recording permission:", error);
-      sendingMessage("請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。");
+      sendingMessage(
+        "請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。"
+      );
       setIsGranted(false);
       return false;
     }
@@ -132,11 +134,17 @@ const AudioRecorder: React.FC = () => {
     <div className="sm:w-full md:w-full lg:w-9/12 xl:w-8/12">
       {contextHolder}
       <div className="h-3/4 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-1 justify-center p-4 gap-10 rounded-lg shadow-md">
-        <div className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center" onClick={checkRecordingPermission}>
-          {isGranted ? " " : "請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。"}
+        <div
+          className="col-span-1 text-lg capitalize rounded-md flex flex-row-reverse justify-center"
+          onClick={checkRecordingPermission}
+        >
+          {isGranted
+            ? " "
+            : "請先允許錄音權限，如果沒有看到權限請求，請在瀏覽器設定中開啟。"}
         </div>
-        <div className="col-span-1 text-lg capitalize rounded-md flex justify-center">
-          請用台語讀出下列這段話：
+        <div className="text-lg flex items-center justify-center ">
+          請用台語讀出下列這段話，以正常口語方式念出即可，無須朗讀
+          (不會念的詞語直接唸中文即可)
         </div>
         <div className="col-span-1 text-lg capitalize rounded-md flex justify-center showText">
           這裡的風景非常美麗，適合發展觀光事業。
@@ -152,7 +160,13 @@ const AudioRecorder: React.FC = () => {
         <div className="col-span-1 text-lg rounded-md flex flex-row-reverse justify-center">
           {isGranted ? (
             <Button
-              text={isRecording ? " 停止錄音" : audioBlob === null ? " 開始錄音" : " 重新錄音"}
+              text={
+                isRecording
+                  ? " 停止錄音"
+                  : audioBlob === null
+                  ? " 開始錄音"
+                  : " 重新錄音"
+              }
               icon={isRecording ? <CloseSquareOutlined /> : <AudioOutlined />}
               onClick={handleRecordClick}
             ></Button>

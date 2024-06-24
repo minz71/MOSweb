@@ -24,7 +24,9 @@ const Describe: React.FC<DescribeProps> = () => {
         </div>
         <div className="col-span-1 rounded-md text-xl grid gap-2">
           <p className="flex justify-center"> 合成語音品質評估 </p>
-          <p className="flex justify-center"> 感謝您參與本次實驗！ </p>
+          <p className="flex justify-center">
+            本次實驗約需花費20分鐘左右的時間來完成，感謝您參與本次實驗！
+          </p>
           <p className="flex justify-center">
             在這個實驗中，我們使用電腦合成閩南語語音。
           </p>
@@ -32,7 +34,7 @@ const Describe: React.FC<DescribeProps> = () => {
             以下的音檔中，包含了真實的錄音以及合成的聲音，並且每句話都有附上文字稿。
           </p>
           <p className="flex justify-center">
-            請受試者使用耳機聆聽，並根據每個音檔的品質，給予以下幾種評分：
+            請受試者使用耳機聆聽，並根據每個語音檔的聽感(自然度、流暢度、閩南語發音)，給予以下幾種評分。
           </p>
         </div>
         <div className="grid gap-4">
